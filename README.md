@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 精神科 MBC 管理システム
 
-## Getting Started
+Measurement-Based Care（MBC）に基づく精神科治療効果の可視化システムです。PHQ-9・MADRS・HAM-D・BDI-II の評価尺度を記録し、経時グラフで治療効果を追跡します。
 
-First, run the development server:
+## 機能
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 患者の匿名管理（匿名コードによる識別）
+- 4 種類の評価尺度入力（PHQ-9 / MADRS / HAM-D / BDI-II）
+- 経時グラフによるスコア推移の可視化
+- 重症度の自動判定とバッジ表示
+- 期間フィルター（1 ヶ月 / 3 ヶ月 / 全期間）
+
+## Supabase セットアップ
+
+### 1. プロジェクト作成
+
+[https://supabase.com](https://supabase.com) でプロジェクトを作成します。
+
+### 2. テーブル作成
+
+Supabase ダッシュボードの **SQL Editor** で以下を実行します。
+
+```sql
+create table patients (
+  id uuid default gen_random_uuid() primary key,
+  anonymous_code text not null unique,
+  diagnosis text,
+  notes text,
+  created_at timestamp with time zone default now()
+);
+
+create table assessments (
+  id uuid default gen_random_uuid() primary key,
+  patient_id uuid references patients(id) on delete cascade,
+  scale_name text not null,
+  scores jsonb not null,
+  total_score integer not null,
+  assessed_at date not null,
+  notes text,
+  created_at timestamp with time zone default now()
+);
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. RLS（Row Level Security）の設定（任意）
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+開発中はテーブルの RLS を無効にするか、適切なポリシーを設定してください。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Supabase ダッシュボード → Authentication → Policies から設定できます。
 
-## Learn More
+## 環境変数の設定
 
-To learn more about Next.js, take a look at the following resources:
+`.env.local` ファイルを編集し、Supabase の接続情報を設定します。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxxxxxxxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Supabase ダッシュボードの **Project Settings → API** から取得できます。
 
-## Deploy on Vercel
+## 起動方法
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# 依存パッケージのインストール（初回のみ）
+npm install
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 開発サーバーの起動
+npm run dev
+```
+
+ブラウザで [http://localhost:3000](http://localhost:3000) を開きます。
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 16 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS v4
+- **UI コンポーネント**: shadcn/ui (base-nova スタイル / Base UI)
+- **データベース**: Supabase (PostgreSQL)
+- **グラフ**: Recharts
