@@ -19,7 +19,7 @@ export interface Assessment {
   created_at: string
 }
 
-export type ScaleName = 'PHQ-9' | 'MADRS' | 'HAM-D' | 'BDI-II' | 'YMRS' | 'PANSS' | 'BPRS' | 'DIEPSS' | 'CGI' | 'ISI'
+export type ScaleName = 'PHQ-9' | 'MADRS' | 'HAM-D' | 'BDI-II' | 'YMRS' | 'PANSS' | 'BPRS' | 'DIEPSS' | 'CGI' | 'ISI' | 'GAD-7'
 
 export interface ScaleItem {
   id: string

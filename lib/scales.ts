@@ -255,6 +255,27 @@ export const SCALE_DEFINITIONS: Record<ScaleName, ScaleDefinition> = {
     ],
     cutoffLines: [3, 5, 7],
   },
+  'GAD-7': {
+    name: 'GAD-7',
+    description: 'Generalized Anxiety Disorder-7（全般性不安障害質問票）',
+    items: [
+      { id: 'gad1', label: '緊張感、不安感または神経過敏を感じる', maxScore: 3 },
+      { id: 'gad2', label: '心配することを止められない、または心配をコントロールできない', maxScore: 3 },
+      { id: 'gad3', label: 'いろいろなことを心配しすぎる', maxScore: 3 },
+      { id: 'gad4', label: 'くつろぐことが難しい', maxScore: 3 },
+      { id: 'gad5', label: 'じっとしていられないほど落ち着かない', maxScore: 3 },
+      { id: 'gad6', label: 'いらいらしがちであり、怒りっぽい', maxScore: 3 },
+      { id: 'gad7', label: '何か恐ろしいことが起こるのではないかと恐れを感じる', maxScore: 3 },
+    ],
+    maxScore: 21,
+    severityLevels: [
+      { label: 'なし', min: 0, max: 4, color: '#22c55e' },
+      { label: '軽度', min: 5, max: 9, color: '#eab308' },
+      { label: '中等度', min: 10, max: 14, color: '#f97316' },
+      { label: '重度', min: 15, max: 21, color: '#ef4444' },
+    ],
+    cutoffLines: [5, 10, 15],
+  },
   'ISI': {
     name: 'ISI',
     description: 'Insomnia Severity Index（不眠重症度指数）',
@@ -309,7 +330,7 @@ export const SCALE_GROUPS: ScaleGroup[] = [
   },
   {
     diagnosis: '不安障害',
-    scales: ['CGI'],
+    scales: ['GAD-7', 'CGI'],
     color: '#10b981',
   },
   {
@@ -320,18 +341,19 @@ export const SCALE_GROUPS: ScaleGroup[] = [
 ]
 
 export const SCALE_NAMES: ScaleName[] = [
-  'PHQ-9', 'MADRS', 'HAM-D', 'BDI-II', 'YMRS', 'PANSS', 'BPRS', 'DIEPSS', 'CGI', 'ISI',
+  'PHQ-9', 'MADRS', 'HAM-D', 'BDI-II', 'YMRS', 'PANSS', 'BPRS', 'DIEPSS', 'CGI', 'ISI', 'GAD-7',
 ]
 
 export const SCALE_COLORS: Record<ScaleName, string> = {
-  'PHQ-9': '#3b82f6',
-  'MADRS': '#22c55e',
-  'HAM-D': '#ef4444',
-  'BDI-II': '#a855f7',
-  'YMRS': '#f97316',
-  'PANSS': '#8b5cf6',
-  'BPRS': '#f59e0b',
-  'DIEPSS': '#06b6d4',
-  'CGI': '#10b981',
-  'ISI': '#6366f1',
+  'PHQ-9': '#ef4444',   // 赤
+  'MADRS': '#f97316',   // オレンジ
+  'HAM-D': '#eab308',   // 黄
+  'BDI-II': '#22c55e',  // 緑
+  'YMRS': '#06b6d4',    // シアン
+  'PANSS': '#3b82f6',   // 青
+  'BPRS': '#8b5cf6',    // 紫
+  'DIEPSS': '#ec4899',  // ピンク
+  'CGI': '#84cc16',     // 黄緑
+  'ISI': '#a16207',     // 茶
+  'GAD-7': '#14b8a6',   // ティール
 }
