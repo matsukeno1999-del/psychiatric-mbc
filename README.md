@@ -1,80 +1,93 @@
 # 精神科 MBC 管理システム
 
-Measurement-Based Care（MBC）に基づく精神科治療効果の可視化システムです。PHQ-9・MADRS・HAM-D・BDI-II の評価尺度を記録し、経時グラフで治療効果を追跡します。
+Measurement-Based Care（MBC）に基づく精神科治療効果の可視化デスクトップアプリです。11 種類の評価尺度を記録し、経時グラフで治療効果を追跡します。
+
+**完全ローカル動作**の Electron アプリで、データはすべて端末内の SQLite に保存されます。外部サーバーへの通信は行いません。
 
 ## 機能
 
-- 患者の匿名管理（匿名コードによる識別）
-- 4 種類の評価尺度入力（PHQ-9 / MADRS / HAM-D / BDI-II）
-- 経時グラフによるスコア推移の可視化
+- 患者の匿名管理（匿名コード・年齢・性別・診断・メモ）
+- 診断別にグループ化された 11 種類の評価尺度入力
+- 経時グラフによるスコア推移の可視化（重症度カットオフライン表示付き）
 - 重症度の自動判定とバッジ表示
 - 期間フィルター（1 ヶ月 / 3 ヶ月 / 全期間）
+- CSV エクスポート（ワイド形式 — 全 11 尺度を患者 × 評価日ごとに 1 行で出力）
 
-## Supabase セットアップ
+## 対応評価尺度
 
-### 1. プロジェクト作成
+| 診断グループ | 尺度 |
+|---|---|
+| うつ病・気分障害 | PHQ-9 / MADRS / HAM-D / BDI-II |
+| 双極性障害 | YMRS |
+| 統合失調症 | PANSS / BPRS / DIEPSS |
+| 不安障害 | GAD-7 / CGI |
+| 不眠症 | ISI |
 
-[https://supabase.com](https://supabase.com) でプロジェクトを作成します。
+各尺度は項目定義・重症度区分・カットオフ値を `lib/scales.ts` で管理しています。
 
-### 2. テーブル作成
+## データの保存場所
 
-Supabase ダッシュボードの **SQL Editor** で以下を実行します。
+| 環境 | パス |
+|---|---|
+| 開発時 | プロジェクト内 `data/data.db` |
+| インストール版 | `%APPDATA%\psychiatric-mbc\data.db`（Electron の userData ディレクトリ） |
 
-```sql
-create table patients (
-  id uuid default gen_random_uuid() primary key,
-  anonymous_code text not null unique,
-  diagnosis text,
-  notes text,
-  created_at timestamp with time zone default now()
-);
+SQLite（WAL モード・外部キー制約有効）で `patients` / `assessments` の 2 テーブル構成です。スキーマは初回起動時に自動作成されます（`electron/database.js`）。
 
-create table assessments (
-  id uuid default gen_random_uuid() primary key,
-  patient_id uuid references patients(id) on delete cascade,
-  scale_name text not null,
-  scores jsonb not null,
-  total_score integer not null,
-  assessed_at date not null,
-  notes text,
-  created_at timestamp with time zone default now()
-);
-```
-
-### 3. RLS（Row Level Security）の設定（任意）
-
-開発中はテーブルの RLS を無効にするか、適切なポリシーを設定してください。
-
-Supabase ダッシュボード → Authentication → Policies から設定できます。
-
-## 環境変数の設定
-
-`.env.local` ファイルを編集し、Supabase の接続情報を設定します。
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxxxxxxxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-Supabase ダッシュボードの **Project Settings → API** から取得できます。
-
-## 起動方法
+## 開発環境での起動
 
 ```bash
 # 依存パッケージのインストール（初回のみ）
 npm install
 
-# 開発サーバーの起動
+# ターミナル1: Next.js 開発サーバー
 npm run dev
+
+# ターミナル2: Electron ウィンドウ（localhost:3000 を読み込む）
+npm run electron:dev
 ```
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開きます。
+## インストーラーのビルド
+
+```bash
+npm run electron:build
+```
+
+Next.js の静的エクスポート（`out/`）を electron-serve で読み込む構成でビルドし、`dist/精神科MBC管理システム Setup 1.0.0.exe`（Windows x64 インストーラー）を生成します。
+
+## アーキテクチャ
+
+```
+Next.js (静的エクスポート)  ←  レンダラープロセス（UI）
+        │  window.electronAPI（preload.js / contextIsolation 有効）
+        ▼
+Electron メインプロセス（electron/main.js）
+        │  IPC ハンドラ
+        ▼
+better-sqlite3（electron/database.js） →  data.db
+```
+
+レンダラーは `nodeIntegration: false` / `contextIsolation: true` で分離し、DB アクセスはすべて IPC 経由でメインプロセスが行います。
 
 ## 技術スタック
 
-- **フレームワーク**: Next.js 16 (App Router)
+- **デスクトップ**: Electron 42 + electron-builder
+- **フレームワーク**: Next.js 16 (App Router / 静的エクスポート)
 - **言語**: TypeScript
 - **スタイリング**: Tailwind CSS v4
 - **UI コンポーネント**: shadcn/ui (base-nova スタイル / Base UI)
-- **データベース**: Supabase (PostgreSQL)
+- **データベース**: SQLite (better-sqlite3)
 - **グラフ**: Recharts
+
+## 画面構成
+
+| パス | 画面 |
+|---|---|
+| `/` | ホーム（患者一覧） |
+| `/patient` | 患者詳細・経時グラフ |
+| `/assess` | 評価尺度の入力 |
+| `/export` | CSV エクスポート |
+
+## 補足
+
+初期バージョンは Supabase（クラウド PostgreSQL）を使用していましたが、診療データを端末外に出さないため、現在は完全ローカルの Electron + SQLite 構成に移行済みです。`lib/supabase.ts` と `.env.local` は旧構成の名残であり、現行のアプリ動作には使用されません。
