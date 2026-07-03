@@ -20,6 +20,12 @@
 # production
 /build
 
+# electron build artifacts
+/dist
+
+# local database (patient data - never commit)
+/data
+
 # misc
 .DS_Store
 *.pem
