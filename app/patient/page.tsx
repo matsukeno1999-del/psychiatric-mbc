@@ -161,7 +161,7 @@ function PatientDetailContent() {
                     ))
                   )}
                   {usedScales.map((scaleName) => (
-                    <Line key={scaleName} type="monotone" dataKey={scaleName} stroke={SCALE_COLORS[scaleName]} strokeWidth={2} dot={{ r: 4 }} connectNulls />
+                    <Line key={scaleName} type="linear" dataKey={scaleName} stroke={SCALE_COLORS[scaleName]} strokeWidth={2} dot={{ r: 4 }} connectNulls />
                   ))}
                 </LineChart>
               </ResponsiveContainer>
