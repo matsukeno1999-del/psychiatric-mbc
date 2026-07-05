@@ -6,7 +6,7 @@ Measurement-Based Care（MBC）に基づく精神科治療効果の可視化デ�
 
 ## ダウンロード（Windows）
 
-1. [Releases ページ](https://github.com/matsukeno1999-del/psychiatric-mbc/releases/latest)から `精神科MBC管理システム Setup x.x.x.exe` をダウンロード
+1. [Releases ページ](https://github.com/matsukeno1999-del/psychiatric-mbc/releases/latest)から `Psychiatric-MBC-Setup-x.x.x.exe` をダウンロード
 2. ダウンロードした exe を実行してインストール
 
 > **「Windows によって PC が保護されました」と表示される場合**
