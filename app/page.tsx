@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { PlusIcon, UserIcon, PencilIcon, Trash2Icon, DownloadIcon, ChevronUpIcon, ChevronDownIcon, ChevronsUpDownIcon, DatabaseIcon } from 'lucide-react'
+import { PlusIcon, UserIcon, PencilIcon, Trash2Icon, DownloadIcon, FileUpIcon, ChevronUpIcon, ChevronDownIcon, ChevronsUpDownIcon, DatabaseIcon } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { Patient } from '@/lib/types'
 import { Button } from '@/components/ui/button'
@@ -158,6 +158,11 @@ export default function HomePage() {
             <Link href="/export">
               <Button variant="outline" className="gap-2">
                 <DownloadIcon className="size-4" />データ出力
+              </Button>
+            </Link>
+            <Link href="/import">
+              <Button variant="outline" className="gap-2">
+                <FileUpIcon className="size-4" />データ取込
               </Button>
             </Link>
             <Button variant="outline" className="gap-2" onClick={handleBackup} disabled={backingUp} title="DBファイルをバックアップ">

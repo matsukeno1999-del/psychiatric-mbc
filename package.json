@@ -1,6 +1,6 @@
 {
   "name": "psychiatric-mbc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
     "electron:dev": "set NODE_ENV=development && electron electron/main.js",
     "electron:build": "next build && electron-builder --win --x64"
   },
@@ -38,7 +39,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   },
   "build": {
     "appId": "jp.ac.yokohama-cu.mbc",
